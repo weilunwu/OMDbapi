@@ -1,9 +1,53 @@
 package OMDbapi
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+	"net/url"
+)
 
-const API_ENDPOINT = "http://omdbapi.com"
+const (
+	baseURL         = "http://omdbapi.com"
+	defaultPlot     = "short"
+	defaultResponse = "json"
+	defaultYear     = ""
+)
 
-func query(title string) (*http.Response, error) {
-	return http.Get(API_ENDPOINT + "?t=" + title + "&r=json")
+type searchResult struct {
+	Title    string
+	Response string
+	Error    string
+}
+
+func query(title string) (*searchResult, error) {
+	// set up parameters
+	URL, err := url.Parse(baseURL)
+
+	if err != nil {
+		return nil, err
+	}
+	URL.Path += "/"
+
+	// need factor these to deal with different inputs
+	parameters := url.Values{}
+	parameters.Add("t", title)
+	parameters.Add("plot", defaultPlot)
+	parameters.Add("r", defaultResponse)
+	parameters.Add("y", defaultYear)
+	URL.RawQuery = parameters.Encode()
+
+	// make query
+	resp, err := http.Get(URL.String())
+
+	if err != nil {
+		return nil, err
+	}
+
+	// decode json response
+	result := &searchResult{}
+	err = json.NewDecoder(resp.Body).Decode(result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

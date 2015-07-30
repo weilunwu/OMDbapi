@@ -6,7 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func testQuery(t *testing.T) {
-	_, err := query("game of throne")
+func TestQuery(t *testing.T) {
+	resp, err := query("game of throne")
 	assert.Nil(t, err)
+	assert.Equal(t, resp.Title, "Game of Throne")
 }
