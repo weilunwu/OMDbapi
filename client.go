@@ -2,6 +2,7 @@ package OMDbapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -14,15 +15,33 @@ const (
 )
 
 type searchResult struct {
-	Title    string
-	Response string
-	Error    string
+	Title      string
+	Year       string
+	Rated      string
+	Released   string
+	Runtime    string
+	Genre      string
+	Director   string
+	Writer     string
+	Actors     string
+	Plot       string
+	Language   string
+	Country    string
+	Awards     string
+	Poster     string
+	Metascore  string
+	IMDBRating string
+	IMDBVotes  string
+	IMDBID     string
+	Type       string
+	Response   string
+	Error      string
 }
 
-func query(title string) (*searchResult, error) {
+// QueryByTitle requires the details by giving a movie title
+func QueryByTitle(title string) (*searchResult, error) {
 	// set up parameters
 	URL, err := url.Parse(baseURL)
-
 	if err != nil {
 		return nil, err
 	}
@@ -50,4 +69,8 @@ func query(title string) (*searchResult, error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+func (sr *searchResult) String() string {
+	return fmt.Sprintf("#%s: %s (%s) Type: %s", sr.IMDBID, sr.Title, sr.Year, sr.Type)
 }
